@@ -1,0 +1,52 @@
+---
+title: "individual1"
+output: html_document
+---
+
+```{r}
+choco <- read.csv("https://raw.githubusercontent.com/xdaiISU/ds202materials/master/hwlabs/data/choco.csv") 
+str(choco)
+```
+
+```{r}
+ratings <- choco$Rating
+hist(ratings)
+
+boxplot(ratings, main ="Chocolate Ratings", horizontal = TRUE)
+```
+
+
+As you can see in the box plot, we do have a few outliers. Anything below a rating of 2.25 seems to be an outlier.
+
+```{r}
+counts <- table(choco$Location)
+barplot(counts, main="Number of Ratings by Company Location",
+        ylab="Number of Ratings",las=2)
+```
+
+```{r}
+cor.test(choco$Cocoa_Percent, ratings, method = "pearson")
+```
+
+```{r}
+plot(choco$Cocoa_Percent, ratings, main="Cocoa Percentage vs Rating", xlab="Cocoa Percentage", ylab="Rating")
+
+```
+```{r}
+library(ggplot2)
+origin_rating <- aggregate.data.frame(choco$Rating, by=list(choco$Bean_Origin), mean)
+origin_rating[order(-origin_rating$x),]
+ggplot(choco, aes(x=Bean_Origin, y=Rating)) + geom_boxplot() + coord_flip()
+```
+
+```{r}
+date_rating <- aggregate.data.frame(choco$Rating, by=list(choco$Date), mean)
+date_rating
+ggplot(choco, aes(x=Date, y=Rating)) + geom_point()
+```
+```{r}
+Cocoa_percent_origin <- aggregate.data.frame(choco$Cocoa_Percent, by=list(choco$Bean_Origin), mean)
+Cocoa_percent_origin[order(-Cocoa_percent_origin$x),]
+ggplot(choco, aes(x=Bean_Origin, y=Cocoa_Percent)) + geom_boxplot() + coord_flip()
+```
+

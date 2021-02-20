@@ -1,0 +1,62 @@
+---
+title: "Lab 2 - Daryl Kay - DS202 2/19"
+output: html_document
+---
+
+```{r}
+choco <- read.csv("https://raw.githubusercontent.com/xdaiISU/ds202materials/master/hwlabs/data/choco.csv") 
+str(choco)
+```
+
+```{r}
+ratings <- choco$Rating
+hist(ratings)
+
+boxplot(ratings, main ="Chocolate Ratings", horizontal = TRUE)
+```
+
+
+As you can see in the box plot, we do have a few outliers. Anything below a rating of 2.25 seems to be an outlier.
+
+```{r}
+counts <- table(choco$Location)
+barplot(counts, main="Number of Ratings by Company Location",
+        ylab="Number of Ratings",las=2)
+```
+
+Above is a box plot with the number of ratings by the location a company is located at.
+```{r}
+library(ggplot2)
+cor.test(choco$Cocoa_Percent, ratings, method = "pearson")
+ggplot(choco, aes(x=as.factor(choco$Cocoa_Percent), y=Rating)) + geom_boxplot() + coord_flip()
+```
+
+
+Just looking at the numerical data, we can see that the data doesn't seem to have correlation. However, upon further inspection on the boxplot graph, we can see that there is a correlation. The ratings for the lower percent of cacoa and the highest percent seem to be the lowest. The higher ratings are found around the middle of the graph
+```{r}
+origin_rating <- aggregate.data.frame(choco$Rating, by=list(choco$Bean_Origin), mean)
+origin_rating[order(-origin_rating$x),]
+ggplot(choco, aes(x=Bean_Origin, y=Rating)) + geom_boxplot() + coord_flip()
+```
+
+Beans from different origins did have a different rating which could happen for a number of reasons. Further research may need to be done to find this reason. Beans from Tobago, Sao Tome & Principe, the Solomon Islands and the Congo had the highest rated beans while places like St.Vincent-Grenadines, Puerta Rico, and Principe had the lowest rated beans.
+
+#### First Analysis
+I wanted to find out whether the date had anything to do with the rating of chocolate. I will compare the date the rating was made as well as the rating itself.
+```{r}
+date_rating <- aggregate.data.frame(choco$Rating, by=list(choco$Date), mean)
+date_rating
+ggplot(choco, aes(x=Date, y=Rating)) + geom_point()
+```
+
+While we don't know the reason behind it, from the graph we can see that the lower ratings started to disapear as the years went on. Further testing will be needed to solidify the hypothesis but this could be because the chocolate bars with the lower rating went out of business over time because they didn't deliver a quality product.
+
+#### Second Analysis
+I want to find out whether the bean origin has anything to do with the cocoa percent in the chocolate bars. They may decide to use a higher cocoa or lower cocoa percent depending on the origin of the bean.
+```{r}
+Cocoa_percent_origin <- aggregate.data.frame(choco$Cocoa_Percent, by=list(choco$Bean_Origin), mean)
+Cocoa_percent_origin[order(-Cocoa_percent_origin$x),]
+ggplot(choco, aes(x=Bean_Origin, y=Cocoa_Percent)) + geom_boxplot() + coord_flip()
+```
+
+While most of the origins are around the 65-75% of cocoa, there was a country that stood out as an outlier itself. Beans from Samoa were made into 82.3% bars on average. While there are plenty of outlier points on the boxplot, Somoa has a boxplot shifted a lot higher than the other origins
